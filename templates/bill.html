@@ -1,0 +1,296 @@
+<!DOCTYPE html>
+<html lang="en">
+
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+
+    <title>GreenLeaf Grocers - Customer Bill</title>
+
+    <style>
+        * {
+            box-sizing: border-box;
+        }
+
+        body {
+            font-family: Arial, sans-serif;
+            background: #f0f4ef;
+            margin: 0;
+            padding: 25px;
+            color: #333;
+        }
+
+        .receipt {
+            max-width: 800px;
+            margin: auto;
+            background: white;
+            padding: 35px;
+            border-radius: 12px;
+            box-shadow: 0 3px 12px #ccc;
+        }
+
+        .header {
+            text-align: center;
+            border-bottom: 3px solid #245c35;
+            padding-bottom: 18px;
+        }
+
+        .header h1 {
+            color: #245c35;
+            margin-bottom: 5px;
+        }
+
+        .header p {
+            margin: 5px;
+        }
+
+        .details {
+            display: flex;
+            justify-content: space-between;
+            flex-wrap: wrap;
+            margin: 25px 0;
+            gap: 15px;
+        }
+
+        .details div {
+            line-height: 1.8;
+        }
+
+        table {
+            width: 100%;
+            border-collapse: collapse;
+            margin-top: 20px;
+        }
+
+        th,
+        td {
+            padding: 13px;
+            border: 1px solid #ddd;
+            text-align: center;
+        }
+
+        th {
+            background: #245c35;
+            color: white;
+        }
+
+        .totals {
+            margin-top: 25px;
+            margin-left: auto;
+            max-width: 350px;
+        }
+
+        .total-row {
+            display: flex;
+            justify-content: space-between;
+            padding: 9px;
+            border-bottom: 1px solid #ddd;
+        }
+
+        .grand-total {
+            font-size: 22px;
+            font-weight: bold;
+            color: #245c35;
+            border-top: 2px solid #245c35;
+        }
+
+        .footer {
+            text-align: center;
+            margin-top: 35px;
+            border-top: 1px dashed #aaa;
+            padding-top: 20px;
+        }
+
+        .buttons {
+            text-align: center;
+            margin-top: 25px;
+        }
+
+        button,
+        .back-link {
+            padding: 12px 22px;
+            background: #245c35;
+            color: white;
+            border: none;
+            border-radius: 6px;
+            cursor: pointer;
+            text-decoration: none;
+            display: inline-block;
+            margin: 5px;
+        }
+
+        button:hover,
+        .back-link:hover {
+            background: #387d46;
+        }
+
+        @media print {
+            body {
+                background: white;
+                padding: 0;
+            }
+
+            .receipt {
+                box-shadow: none;
+                border-radius: 0;
+                padding: 15px;
+            }
+
+            .buttons {
+                display: none;
+            }
+        }
+
+        @media (max-width: 600px) {
+            body {
+                padding: 8px;
+            }
+
+            .receipt {
+                padding: 15px;
+            }
+
+            th,
+            td {
+                padding: 7px;
+                font-size: 12px;
+            }
+        }
+    </style>
+</head>
+
+<body>
+
+    <div class="receipt">
+
+        <div class="header">
+
+            <h1>🌿 GreenLeaf Grocers</h1>
+
+            <p>Fresh Products | Quality Service</p>
+
+            <p><strong>Customer Sales Receipt</strong></p>
+
+        </div>
+
+        <div class="details">
+
+            <div>
+                <strong>Bill Information</strong><br>
+
+                Bill Number: #{{ sale.sale_id }}<br>
+
+                Date: {{ sale.sale_date }}<br>
+
+                Time: {{ sale.sale_time }}
+
+            </div>
+
+            <div>
+                <strong>Cashier Information</strong><br>
+
+                Cashier: {{ sale.user_id }}<br>
+
+                Payment Status: Generated
+            </div>
+
+        </div>
+
+        <h3>Purchased Products</h3>
+
+        <table>
+
+            <thead>
+                <tr>
+                    <th>Product</th>
+                    <th>Unit Price</th>
+                    <th>Quantity</th>
+                    <th>Amount</th>
+                </tr>
+            </thead>
+
+            <tbody>
+
+                {% for item, product in items %}
+
+                <tr>
+
+                    <td>{{ product.name }}</td>
+
+                    <td>₹{{ "%.2f"|format(item.price) }}</td>
+
+                    <td>{{ item.quantity }}</td>
+
+                    <td>
+                        ₹{{ "%.2f"|format(item.price * item.quantity) }}
+                    </td>
+
+                </tr>
+
+                {% endfor %}
+
+            </tbody>
+
+        </table>
+
+        <div class="totals">
+
+            <div class="total-row">
+                <span>Subtotal</span>
+
+                <strong>
+                    ₹{{ "%.2f"|format(
+                    (sale.total_amount or 0) + (sale.discount or 0)
+                    ) }}
+                </strong>
+            </div>
+
+            <div class="total-row">
+                <span>Discount</span>
+
+                <strong>
+                    ₹{{ "%.2f"|format(sale.discount or 0) }}
+                </strong>
+            </div>
+
+            <div class="total-row grand-total">
+                <span>Grand Total</span>
+
+                <strong>
+                    ₹{{ "%.2f"|format(sale.total_amount) }}
+                </strong>
+            </div>
+
+        </div>
+
+        <div class="footer">
+
+            <h3>Thank You for Shopping!</h3>
+
+            <p>Visit GreenLeaf Grocers Again.</p>
+
+            <p>Freshness You Can Trust 🌱</p>
+
+        </div>
+
+        <div class="buttons">
+
+            <button onclick="window.print()">
+                Print / Save as PDF
+            </button>
+
+            <a href="{{ url_for('billing') }}" class="back-link">
+                New Bill
+            </a>
+
+            <a href="{{ url_for('dashboard') }}" class="back-link">
+                Dashboard
+            </a>
+
+        </div>
+
+    </div>
+
+</body>
+
+</html>

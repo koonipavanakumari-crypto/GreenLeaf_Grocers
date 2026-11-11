@@ -1,0 +1,80 @@
+
+<!DOCTYPE html>
+<html>
+<head>
+    <title>Import Products - GreenLeaf Grocers</title>
+    <meta name="viewport" content="width=device-width, initial-scale=1">
+
+    <style>
+        body {
+            font-family: Arial, sans-serif;
+            background: #f4f6f3;
+            padding: 30px;
+        }
+
+        .box {
+            max-width: 600px;
+            margin: 30px auto;
+            background: white;
+            padding: 25px;
+            border-radius: 10px;
+        }
+
+        h2 {
+            color: #245c35;
+        }
+
+        button, a {
+            background: #245c35;
+            color: white;
+            padding: 10px 15px;
+            border: none;
+            border-radius: 5px;
+            text-decoration: none;
+            cursor: pointer;
+        }
+
+        input {
+            margin: 15px 0;
+        }
+
+        .message {
+            margin: 10px 0;
+            padding: 10px;
+            background: #edf5ed;
+        }
+    </style>
+</head>
+
+<body>
+
+<div class="box">
+    <h2>Import Products from CSV</h2>
+
+    <p>Required CSV columns:</p>
+
+    <p>
+        name, category, unit_price, stock_qty, reorder_level
+    </p>
+
+    <p>Optional column: expiry_date (YYYY-MM-DD)</p>
+
+    {% with messages = get_flashed_messages(with_categories=true) %}
+        {% for category, message in messages %}
+            <div class="message">{{ message }}</div>
+        {% endfor %}
+    {% endwith %}
+
+    <form method="POST" enctype="multipart/form-data">
+        <input type="file" name="file" accept=".csv" required>
+        <br>
+        <button type="submit">Import Products</button>
+    </form>
+
+    <br><br>
+    <a href="/products">Back to Products</a>
+    <a href="/products/export">Export Products</a>
+</div>
+
+</body>
+</html>

@@ -1,0 +1,142 @@
+
+<!DOCTYPE html>
+<html>
+<head>
+    <title>Inventory Alerts - GreenLeaf Grocers</title>
+    <meta name="viewport" content="width=device-width, initial-scale=1">
+
+    <style>
+        body {
+            font-family: Arial, sans-serif;
+            background: #f4f6f3;
+            padding: 25px;
+        }
+
+        h1, h2 {
+            color: #245c35;
+        }
+
+        .panel {
+            background: white;
+            padding: 20px;
+            margin-top: 20px;
+            border-radius: 10px;
+            overflow-x: auto;
+        }
+
+        table {
+            width: 100%;
+            border-collapse: collapse;
+        }
+
+        th, td {
+            padding: 12px;
+            border-bottom: 1px solid #ddd;
+            text-align: left;
+        }
+
+        th {
+            background: #245c35;
+            color: white;
+        }
+
+        .warning {
+            color: #d97706;
+            font-weight: bold;
+        }
+
+        .danger {
+            color: red;
+            font-weight: bold;
+        }
+
+        a {
+            display: inline-block;
+            background: #245c35;
+            color: white;
+            padding: 10px 15px;
+            text-decoration: none;
+            border-radius: 5px;
+            margin: 4px;
+        }
+    </style>
+</head>
+
+<body>
+
+<h1>Inventory Alerts</h1>
+
+<a href="/dashboard">Dashboard</a>
+<a href="/products">Products</a>
+<a href="/reports">Sales Reports</a>
+
+<div class="panel">
+    <h2>Low Stock Products</h2>
+
+    <table>
+        <tr>
+            <th>Product</th>
+            <th>Category</th>
+            <th>Current Stock</th>
+            <th>Reorder Level</th>
+        </tr>
+
+        {% for p in low_stock %}
+        <tr>
+            <td>{{ p.name }}</td>
+            <td>{{ p.category }}</td>
+            <td class="warning">{{ p.stock_qty }}</td>
+            <td>{{ p.reorder_level }}</td>
+        </tr>
+        {% else %}
+        <tr><td colspan="4">No low-stock products.</td></tr>
+        {% endfor %}
+    </table>
+</div>
+
+<div class="panel">
+    <h2>Products Near Expiry - Within 15 Days</h2>
+
+    <table>
+        <tr>
+            <th>Product</th>
+            <th>Expiry Date</th>
+            <th>Stock</th>
+        </tr>
+
+        {% for p in near_expiry %}
+        <tr>
+            <td>{{ p.name }}</td>
+            <td class="warning">{{ p.expiry_date }}</td>
+            <td>{{ p.stock_qty }}</td>
+        </tr>
+        {% else %}
+        <tr><td colspan="3">No products near expiry.</td></tr>
+        {% endfor %}
+    </table>
+</div>
+
+<div class="panel">
+    <h2>Expired Products</h2>
+
+    <table>
+        <tr>
+            <th>Product</th>
+            <th>Expiry Date</th>
+            <th>Stock</th>
+        </tr>
+
+        {% for p in expired %}
+        <tr>
+            <td>{{ p.name }}</td>
+            <td class="danger">{{ p.expiry_date }}</td>
+            <td>{{ p.stock_qty }}</td>
+        </tr>
+        {% else %}
+        <tr><td colspan="3">No expired products.</td></tr>
+        {% endfor %}
+    </table>
+</div>
+
+</body>
+</html>

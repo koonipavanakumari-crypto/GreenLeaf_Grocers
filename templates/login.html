@@ -1,0 +1,99 @@
+<!DOCTYPE html>
+<html lang="en">
+
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>GreenLeaf Grocers - Login</title>
+
+    <style>
+        * {
+            box-sizing: border-box;
+        }
+
+        body {
+            margin: 0;
+            font-family: Arial, sans-serif;
+            background: #f1f5ed;
+            display: flex;
+            justify-content: center;
+            align-items: center;
+            min-height: 100vh;
+        }
+
+        .login-box {
+            background: white;
+            padding: 35px;
+            width: 350px;
+            border-radius: 12px;
+            box-shadow: 0 4px 20px #0002;
+        }
+
+        h1 {
+            text-align: center;
+            color: #285b35;
+        }
+
+        p {
+            text-align: center;
+            color: #777;
+        }
+
+        input {
+            width: 100%;
+            padding: 12px;
+            margin: 10px 0;
+            border: 1px solid #ccc;
+            border-radius: 6px;
+        }
+
+        button {
+            width: 100%;
+            padding: 12px;
+            background: #285b35;
+            color: white;
+            border: none;
+            border-radius: 6px;
+            cursor: pointer;
+            font-size: 16px;
+        }
+
+        button:hover {
+            background: #194326;
+        }
+
+        .error {
+            color: red;
+            text-align: center;
+        }
+    </style>
+</head>
+
+<body>
+
+    <div class="login-box">
+
+        <h1>🌿 GreenLeaf</h1>
+        <p>Inventory & Sales Management System</p>
+
+        {% with messages = get_flashed_messages() %}
+        {% for message in messages %}
+        <p class="error">{{ message }}</p>
+        {% endfor %}
+        {% endwith %}
+
+        <form method="POST" action="{{ url_for('login') }}">
+
+            <input type="text" name="username" placeholder="Enter Username" required>
+
+            <input type="password" name="password" placeholder="Enter Password" required>
+
+            <button type="submit">Login</button>
+
+        </form>
+
+    </div>
+
+</body>
+
+</html>

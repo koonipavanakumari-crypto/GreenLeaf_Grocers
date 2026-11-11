@@ -1,0 +1,271 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>GreenLeaf Grocers Dashboard</title>
+
+<style>
+* {
+    box-sizing: border-box;
+    margin: 0;
+    padding: 0;
+}
+
+body {
+    font-family: Arial, sans-serif;
+    background: #f2f7f3;
+    color: #26352a;
+}
+
+header {
+    background: #176b3a;
+    color: white;
+    padding: 25px;
+    display: flex;
+    justify-content: space-between;
+    align-items: center;
+    flex-wrap: wrap;
+    gap: 15px;
+}
+
+header h1 {
+    margin-bottom: 7px;
+}
+
+.logout {
+    background: white;
+    color: #176b3a;
+    padding: 11px 20px;
+    border-radius: 6px;
+    text-decoration: none;
+    font-weight: bold;
+}
+
+.container {
+    width: 92%;
+    max-width: 1200px;
+    margin: 30px auto;
+}
+
+.section {
+    background: white;
+    padding: 25px;
+    margin-bottom: 25px;
+    border-radius: 10px;
+    box-shadow: 0 3px 12px rgba(0,0,0,.07);
+}
+
+.section h2 {
+    color: #176b3a;
+    margin-bottom: 20px;
+}
+
+.cards {
+    display: grid;
+    grid-template-columns: repeat(auto-fit,minmax(190px,1fr));
+    gap: 18px;
+}
+
+.card {
+    padding: 22px;
+    border-left: 5px solid #176b3a;
+    background: #f1f8f2;
+    border-radius: 8px;
+}
+
+.card h3 {
+    font-size: 15px;
+    margin-bottom: 12px;
+    color: #66756a;
+}
+
+.card h2 {
+    font-size: 28px;
+    margin: 0;
+}
+
+.menu {
+    display: grid;
+    grid-template-columns: repeat(auto-fit,minmax(210px,1fr));
+    gap: 15px;
+}
+
+.menu a {
+    display: block;
+    padding: 18px;
+    background: #edf7ef;
+    color: #176b3a;
+    text-decoration: none;
+    border: 1px solid #d4e8d8;
+    border-radius: 8px;
+    font-weight: bold;
+    transition: .2s;
+}
+
+.menu a:hover {
+    background: #176b3a;
+    color: white;
+}
+
+ul {
+    padding-left: 22px;
+    line-height: 2;
+}
+
+table {
+    width: 100%;
+    border-collapse: collapse;
+}
+
+th, td {
+    padding: 13px;
+    text-align: left;
+    border-bottom: 1px solid #ddd;
+}
+
+th {
+    background: #176b3a;
+    color: white;
+}
+
+footer {
+    text-align: center;
+    padding: 25px;
+    color: #777;
+}
+
+@media(max-width:600px) {
+    .container {
+        width: 95%;
+    }
+
+    .section {
+        padding: 15px;
+        overflow-x: auto;
+    }
+}
+</style>
+</head>
+
+<body>
+
+<header>
+    <div>
+        <h1>GreenLeaf Grocers</h1>
+        <p>Inventory & Sales Management System</p>
+    </div>
+
+    <a class="logout" href="/logout">Logout</a>
+</header>
+
+<div class="container">
+
+    <div class="section">
+        <h2>Welcome to GreenLeaf Grocers!</h2>
+        <p>Logged in as:
+            <strong>{{ session.get('username', 'User') }}</strong>
+        </p>
+        <p>Role:
+            <strong>{{ session.get('role', 'User') }}</strong>
+        </p>
+    </div>
+
+    <div class="section">
+        <h2>Dashboard Information</h2>
+
+        <div class="cards">
+
+            <div class="card">
+                <h3>Total Sales</h3>
+                <h2>{{ total_sales }}</h2>
+            </div>
+
+            <div class="card">
+                <h3>Total Revenue</h3>
+                <h2>₹{{ "%.2f"|format(total_revenue) }}</h2>
+            </div>
+
+            <div class="card">
+                <h3>Total Products</h3>
+                <h2>{{ total_products }}</h2>
+            </div>
+
+            <div class="card">
+                <h3>Low Stock Products</h3>
+                <h2>{{ low_stock }}</h2>
+            </div>
+
+        </div>
+    </div>
+
+    <div class="section">
+        <h2>Management & Navigation</h2>
+
+        <div class="menu">
+
+            <a href="/billing">Billing System</a>
+            <a href="/products">Product Management</a>
+            <a href="/reports">Reports & Analytics</a>
+            <a href="/alerts">Stock & Expiry Alerts</a>
+
+            {% if session.get('role') == 'admin' %}
+            <a href="/products/import">Import Products CSV</a>
+            <a href="/products/export">Export Products CSV</a>
+            <a href="/reports/export">Export Sales Report</a>
+            {% endif %}
+
+        </div>
+    </div>
+
+    <div class="section">
+        <h2>Billing Information</h2>
+        <ul>
+            <li>Select products from inventory.</li>
+            <li>Enter product quantities.</li>
+            <li>Calculate subtotal automatically.</li>
+            <li>Apply customer discounts.</li>
+            <li>Calculate final bill amount.</li>
+            <li>Generate customer bills and receipts.</li>
+            <li>Automatically update stock after billing.</li>
+        </ul>
+    </div>
+
+    <div class="section">
+        <h2>Recent Sales Information</h2>
+
+        {% if recent_sales %}
+        <table>
+            <thead>
+                <tr>
+                    <th>Bill ID</th>
+                    <th>Date</th>
+                    <th>Total Amount</th>
+                    <th>Time</th>
+                </tr>
+            </thead>
+
+            <tbody>
+                {% for sale in recent_sales %}
+                <tr>
+                    <td>{{ sale.sale_id }}</td>
+                    <td>{{ sale.sale_date }}</td>
+                    <td>₹{{ "%.2f"|format(sale.total_amount) }}</td>
+                    <td>{{ sale.sale_time }}</td>
+                </tr>
+                {% endfor %}
+            </tbody>
+        </table>
+        {% else %}
+        <p>No sales records available.</p>
+        {% endif %}
+    </div>
+
+</div>
+
+<footer>
+    GreenLeaf Grocers | Inventory & Sales Management System
+</footer>
+
+</body>
+</html>

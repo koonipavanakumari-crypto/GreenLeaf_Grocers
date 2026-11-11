@@ -1,0 +1,98 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>GreenLeaf - Advanced Analytics</title>
+<script src="https://cdn.jsdelivr.net/npm/chart.js"></script>
+<style>
+body{font-family:Arial;background:#f4f7f2;margin:0;padding:25px}
+h1{color:#245c35}
+.chart-box{background:white;padding:20px;margin:20px 0;border-radius:12px}
+.chart-box canvas{max-height:350px}
+button{background:#287a43;color:white;border:0;padding:10px 16px;margin:5px;border-radius:6px;cursor:pointer}
+a{color:#287a43}
+</style>
+</head>
+<body>
+<h1>Advanced Analytics Dashboard</h1>
+<a href="{{ url_for('dashboard') }}">Back to Dashboard</a>
+
+<div class="chart-box">
+<h2>Daily Sales Analysis</h2>
+<button onclick="showDaily('revenue')">Revenue View</button>
+<button onclick="showDaily('quantity')">Quantity View</button>
+<canvas id="dailyChart"></canvas>
+</div>
+
+<div class="chart-box">
+<h2>Monthly Sales Analysis</h2>
+<canvas id="monthlyChart"></canvas>
+</div>
+
+<div class="chart-box">
+<h2>Top 10 Selling Products</h2>
+<canvas id="topChart"></canvas>
+</div>
+
+<div class="chart-box">
+<h2>Category-wise Sales Share</h2>
+<canvas id="categoryChart"></canvas>
+</div>
+
+<script>
+const dailyData = {{ daily_sales | tojson }};
+const monthlyData = {{ monthly_sales | tojson }};
+const topData = {{ top_products | tojson }};
+const categoryData = {{ category_sales | tojson }};
+
+let dailyChart;
+
+function showDaily(type) {
+    if (dailyChart) dailyChart.destroy();
+
+    dailyChart = new Chart(document.getElementById("dailyChart"), {
+        type: "line",
+        data: {
+            labels: dailyData.map(x => x.date),
+            datasets: [{
+                label: type === "revenue" ? "Revenue (?)" : "Quantity Sold",
+                data: dailyData.map(x => x[type]),
+                tension: 0.3
+            }]
+        },
+        options: {responsive: true}
+    });
+}
+
+showDaily("revenue");
+
+new Chart(document.getElementById("monthlyChart"), {
+    type: "bar",
+    data: {
+        labels: monthlyData.map(x => x.month),
+        datasets: [
+            {label: "Revenue (?)", data: monthlyData.map(x => x.revenue)},
+            {label: "Quantity", data: monthlyData.map(x => x.quantity)}
+        ]
+    }
+});
+
+new Chart(document.getElementById("topChart"), {
+    type: "bar",
+    data: {
+        labels: topData.map(x => x.product),
+        datasets: [{label: "Quantity Sold", data: topData.map(x => x.quantity)}]
+    }
+});
+
+new Chart(document.getElementById("categoryChart"), {
+    type: "pie",
+    data: {
+        labels: categoryData.map(x => x.category),
+        datasets: [{data: categoryData.map(x => x.share)}]
+    }
+});
+</script>
+</body>
+</html>

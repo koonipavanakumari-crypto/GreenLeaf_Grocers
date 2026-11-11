@@ -1,0 +1,122 @@
+<!DOCTYPE html>
+<html lang="en">
+
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+
+    <title>Product Form - GreenLeaf Grocers</title>
+
+    <style>
+        body {
+            font-family: Arial, sans-serif;
+            background: #f4f7f4;
+            padding: 25px;
+        }
+
+        .container {
+            max-width: 550px;
+            margin: auto;
+            background: white;
+            padding: 25px;
+            border-radius: 10px;
+        }
+
+        h2 {
+            color: #267a43;
+        }
+
+        label {
+            display: block;
+            margin-top: 15px;
+            font-weight: bold;
+        }
+
+        input {
+            width: 100%;
+            box-sizing: border-box;
+            padding: 11px;
+            margin-top: 6px;
+            border: 1px solid #ccc;
+            border-radius: 5px;
+        }
+
+        button,
+        a {
+            display: inline-block;
+            margin-top: 20px;
+            padding: 11px 17px;
+            background: #267a43;
+            color: white;
+            border: none;
+            border-radius: 5px;
+            text-decoration: none;
+            cursor: pointer;
+        }
+
+        .back {
+            background: #555;
+        }
+
+        .message {
+            color: #c0392b;
+        }
+    </style>
+</head>
+
+<body>
+
+    <div class="container">
+
+        {% if product %}
+        <h2>Edit Product</h2>
+        {% else %}
+        <h2>Add New Product</h2>
+        {% endif %}
+
+        {% with messages = get_flashed_messages() %}
+        {% for message in messages %}
+        <p class="message">{{ message }}</p>
+        {% endfor %}
+        {% endwith %}
+
+        <form method="POST">
+
+            <label>Product Name</label>
+            <input type="text" name="name" value="{{ product.name if product else '' }}" required>
+
+            <label>Category</label>
+            <input type="text" name="category" value="{{ product.category if product else '' }}" required>
+
+            <label>Unit Price (₹)</label>
+            <input type="number" name="unit_price" min="0" step="0.01"
+                value="{{ product.unit_price if product else '' }}" required>
+
+            <label>Stock Quantity</label>
+            <input type="number" name="stock_qty" min="0" value="{{ product.stock_qty if product else 0 }}" required>
+
+            <label>Reorder Level</label>
+            <input type="number" name="reorder_level" min="0" value="{{ product.reorder_level if product else 10 }}"
+                required>
+
+            <label>Expiry Date (Optional)</label>
+            <input type="date" name="expiry_date"
+                value="{{ product.expiry_date.isoformat() if product and product.expiry_date else '' }}">
+
+            <br>
+
+            {% if product %}
+            <button type="submit">Update Product</button>
+            {% else %}
+            <button type="submit">Save Product</button>
+            {% endif %}
+
+            <a class="back" href="{{ url_for('products') }}">Cancel</a>
+
+        </form>
+
+    </div>
+
+</body>
+
+</html>

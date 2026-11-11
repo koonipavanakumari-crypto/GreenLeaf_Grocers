@@ -1,0 +1,249 @@
+
+<!DOCTYPE html>
+<html>
+<head>
+    <title>Sales Analytics - GreenLeaf Grocers</title>
+    <meta name="viewport" content="width=device-width, initial-scale=1">
+    <script src="https://cdn.jsdelivr.net/npm/chart.js"></script>
+
+    <style>
+        body {
+            font-family: Arial, sans-serif;
+            background: #f4f6f3;
+            margin: 0;
+            padding: 25px;
+        }
+
+        h1, h2 {
+            color: #245c35;
+        }
+
+        .nav {
+            margin-bottom: 20px;
+        }
+
+        .nav a, button {
+            display: inline-block;
+            background: #245c35;
+            color: white;
+            padding: 10px 15px;
+            border: none;
+            border-radius: 5px;
+            text-decoration: none;
+            margin: 4px;
+            cursor: pointer;
+        }
+
+        .cards {
+            display: grid;
+            grid-template-columns: repeat(auto-fit, minmax(180px, 1fr));
+            gap: 15px;
+            margin: 20px 0;
+        }
+
+        .card, .panel {
+            background: white;
+            padding: 20px;
+            border-radius: 10px;
+            box-shadow: 0 2px 8px #ddd;
+        }
+
+        .card h3 {
+            color: #666;
+            font-size: 15px;
+        }
+
+        .card p {
+            color: #245c35;
+            font-size: 25px;
+            font-weight: bold;
+        }
+
+        .panel {
+            margin-top: 20px;
+            overflow-x: auto;
+        }
+
+        table {
+            width: 100%;
+            border-collapse: collapse;
+        }
+
+        th, td {
+            padding: 12px;
+            border-bottom: 1px solid #ddd;
+            text-align: left;
+        }
+
+        th {
+            background: #245c35;
+            color: white;
+        }
+
+        input {
+            padding: 9px;
+            margin: 5px;
+        }
+
+        .chart {
+            max-width: 850px;
+            margin: auto;
+        }
+    </style>
+</head>
+
+<body>
+
+<h1>GreenLeaf Grocers - Sales Analytics</h1>
+
+<div class="nav">
+    <a href="/dashboard">Dashboard</a>
+    <a href="/alerts">Inventory Alerts</a>
+    <a href="/products">Products</a>
+    <a href="/products/import">Import CSV</a>
+    <a href="/products/export">Export Products</a>
+    <a href="/reports/export">Export Sales</a>
+</div>
+
+<div class="panel">
+    <h2>Filter Sales by Date</h2>
+
+    <form method="GET" action="/reports">
+        <label>From:</label>
+        <input type="date" name="start" value="{{ start }}">
+
+        <label>To:</label>
+        <input type="date" name="end" value="{{ end }}">
+
+        <button type="submit">Apply Filter</button>
+    </form>
+</div>
+
+<div class="cards">
+
+    <div class="card">
+        <h3>Total Revenue</h3>
+        <p>₹{{ "%.2f"|format(revenue) }}</p>
+    </div>
+
+    <div class="card">
+        <h3>Total Bills</h3>
+        <p>{{ total_bills }}</p>
+    </div>
+
+    <div class="card">
+        <h3>Average Bill</h3>
+        <p>₹{{ "%.2f"|format(average_bill) }}</p>
+    </div>
+
+    <div class="card">
+        <h3>Total Products</h3>
+        <p>{{ product_count }}</p>
+    </div>
+
+</div>
+
+<div class="panel">
+    <h2>Daily Revenue Chart</h2>
+    <div class="chart">
+        <canvas id="salesChart"></canvas>
+    </div>
+</div>
+
+<div class="panel">
+    <h2>Top 10 Selling Products</h2>
+
+    <table>
+        <tr>
+            <th>Product</th>
+            <th>Quantity Sold</th>
+            <th>Sales Amount</th>
+        </tr>
+
+        {% for product in top_products %}
+        <tr>
+            <td>{{ product.name }}</td>
+            <td>{{ product.quantity }}</td>
+            <td>₹{{ "%.2f"|format(product.amount) }}</td>
+        </tr>
+        {% else %}
+        <tr>
+            <td colspan="3">No sales available.</td>
+        </tr>
+        {% endfor %}
+    </table>
+</div>
+
+<div class="panel">
+    <h2>Category Sales Distribution</h2>
+    <div class="chart">
+        <canvas id="categoryChart"></canvas>
+    </div>
+</div>
+
+<div class="panel">
+    <h2>Slow Moving Products</h2>
+    <p>Products with no sales in the last 30 days.</p>
+
+    <table>
+        <tr>
+            <th>Product</th>
+            <th>Category</th>
+            <th>Available Stock</th>
+        </tr>
+
+        {% for product in slow_products %}
+        <tr>
+            <td>{{ product.name }}</td>
+            <td>{{ product.category }}</td>
+            <td>{{ product.stock_qty }}</td>
+        </tr>
+        {% else %}
+        <tr>
+            <td colspan="3">No slow-moving products found.</td>
+        </tr>
+        {% endfor %}
+    </table>
+</div>
+
+<script>
+const dailyLabels = {{ daily_labels | tojson }};
+const dailyValues = {{ daily_values | tojson }};
+
+new Chart(document.getElementById("salesChart"), {
+    type: "bar",
+    data: {
+        labels: dailyLabels,
+        datasets: [{
+            label: "Daily Revenue",
+            data: dailyValues,
+            backgroundColor: "#4b9b61"
+        }]
+    },
+    options: {
+        responsive: true,
+        scales: {
+            y: { beginAtZero: true }
+        }
+    }
+});
+
+const categoryLabels = {{ category_labels | tojson }};
+const categoryValues = {{ category_values | tojson }};
+
+new Chart(document.getElementById("categoryChart"), {
+    type: "pie",
+    data: {
+        labels: categoryLabels,
+        datasets: [{
+            data: categoryValues
+        }]
+    },
+    options: {
+        responsive: true
+    }
+});
+</script>
+
+</body>
+</html>
