@@ -1,0 +1,91 @@
+<!DOCTYPE html>
+<html lang="en">
+
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Register - GreenLeaf Grocers</title>
+
+    <style>
+        body {
+            font-family: Arial, sans-serif;
+            background: #edf7ef;
+            display: flex;
+            justify-content: center;
+            align-items: center;
+            min-height: 100vh;
+            margin: 0;
+        }
+
+        .container {
+            background: white;
+            padding: 30px;
+            width: 320px;
+            border-radius: 12px;
+            box-shadow: 0 4px 15px #0002;
+        }
+
+        h2 {
+            text-align: center;
+            color: #176b3a;
+        }
+
+        input {
+            width: 100%;
+            padding: 12px;
+            margin: 10px 0;
+            box-sizing: border-box;
+        }
+
+        button {
+            width: 100%;
+            padding: 12px;
+            background: #176b3a;
+            color: white;
+            border: none;
+            cursor: pointer;
+            border-radius: 5px;
+        }
+
+        p {
+            text-align: center;
+        }
+
+        a {
+            color: #176b3a;
+        }
+
+        .message {
+            color: red;
+            text-align: center;
+        }
+    </style>
+</head>
+
+<body>
+    <div class="container">
+        <h2>Create Account</h2>
+        <p>GreenLeaf Grocers</p>
+
+        {% with messages = get_flashed_messages() %}
+        {% for message in messages %}
+        <p class="message">{{ message }}</p>
+        {% endfor %}
+        {% endwith %}
+
+        <form method="POST">
+            <input type="text" name="username" placeholder="Enter Username" required>
+
+            <input type="password" name="password" placeholder="Enter Password (minimum 6 characters)" minlength="6"
+                required>
+
+            <button type="submit">Register</button>
+        </form>
+
+        <p>Already have an account?
+            <a href="{{ url_for('login') }}">Login</a>
+        </p>
+    </div>
+</body>
+
+</html>
